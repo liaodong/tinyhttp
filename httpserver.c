@@ -62,6 +62,7 @@ void doit(int fd)
 		client_error(fd, method, "501", "Not Implemented", "Tiny does not implement this method");
 		return;
 	}
+	read_request_header(&rio);
 
 	// Parse URI from GET request
 	is_static = parse_uri(uri, filename, cgiargs);
@@ -142,9 +143,12 @@ void server_static(int fd, char *filename, int filesize)
 	get_filetype(filename, filetype);
 	sprintf(buf, "HTTP/1.0 200 OK\r\n");
 	sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);
+	sprintf(buf, "%sServer: Tiny Http Server\r\n", buf);
 	sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
 	sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
 	rio_writen(fd, buf, strlen(buf));
+	printf("Response headers:\n");
+	printf("%s", buf);
 
 	srcfd = Open(filename, O_RDONLY, 0);
 	srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
