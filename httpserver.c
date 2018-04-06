@@ -42,8 +42,10 @@ int main(int argc, char **argv)
 		connfd = Accept(listenfd, (struct sockaddr *)&clientaddr, &clientlen);
 		getnameinfo((struct sockaddr *)&clientaddr,clientlen, hostname, MAXLINE, argv[1], MAXLINE, 0);
 		printf("Accepted connection from (%s, %d)\n", hostname, port);
-		doit(connfd);
+		if (Fork() == 0)	// child process
+			doit(connfd);
 		Close(connfd);
+		Wait(NULL);
 	}
 }
 
